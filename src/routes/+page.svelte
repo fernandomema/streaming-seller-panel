@@ -1,2 +1,14 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script lang="ts">
+    import { page } from '$app/stores';
+    import { Prisma } from '@prisma/client'
+
+    let posts: Prisma.PostSelect[] = $page.data.posts;
+</script>
+
+{JSON.stringify(posts)}
+
+<div>
+    {#each posts as post}
+        {post.title}
+    {/each}
+</div>
