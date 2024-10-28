@@ -13,22 +13,61 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Post {
+model AppUser {
   id        Int      @id @default(autoincrement())
-  title     String
-  content   String?
-  banner    String?
+  email     String   @unique
+  password  String
+  panels    Panel[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  endDate   DateTime?
-  published Boolean  @default(true)
-  author    User?    @relation(fields: [authorId], references: [id])
-  authorId  Int?
 }
 
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+model Panel {
+  id        Int   @id @default(autoincrement())
+  name      String
+  clients PanelClient[]
+  accounts PanelAccounts[]
+  users AppUser[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+}
+
+model PanelClient {
+  id        Int   @id @default(autoincrement())
+  name      String
+  phone     String
+  email     String
+  panel     Panel    @relation(fields: [panelId], references: [id])
+  panelId   Int
+  accounts PanelAccounts[]
+  accountsStatus ClientAccountStatus[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, panelId])
+}
+
+model PanelAccounts {
+  id        Int   @id @default(autoincrement())
+  panel     Panel    @relation(fields: [panelId], references: [id])
+  panelId   Int
+  email     String
+  password  String
+  clients   PanelClient[]
+  clientsStatus ClientAccountStatus[]
+  activatedAt DateTime
+  expiresAt DateTime
+
+}
+
+model ClientAccountStatus {
+  id        Int   @id @default(autoincrement())
+  client    PanelClient @relation(fields: [clientId], references: [id])
+  clientId  Int
+  account   PanelAccounts @relation(fields: [accountId], references: [id])
+  accountId Int
+  lastPayAt DateTime
+  expiresAt DateTime
+  note      String
 }
