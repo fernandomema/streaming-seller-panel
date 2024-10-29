@@ -17,11 +17,11 @@ export const actions = {
 		});
 
 		if (!user) {
-			return json({ error: 'Invalid email or password' }, { status: 401 });
+			return { error: 'Invalid email or password' };
 		}
 
 		if (user.password !== password) {
-			return json({ error: 'Invalid email or password' }, { status: 401 });
+			return { error: 'Invalid email or password' };
 		}
 
         const token = createToken({ 

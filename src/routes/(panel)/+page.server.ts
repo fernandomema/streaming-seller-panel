@@ -19,6 +19,9 @@ export async function load({ cookies }) {
             users: true
         }
     })
+
+    if (panels.length == 1) return redirect(302, `/panel/${panels[0].id}`);
+
     return {
         panels: panels
     };

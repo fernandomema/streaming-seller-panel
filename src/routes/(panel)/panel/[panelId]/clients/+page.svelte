@@ -3,14 +3,19 @@
     import Spoiler from '$lib/components/Spoiler.svelte';
     import type { Prisma } from '@prisma/client';
     import TimeAgo from 'javascript-time-ago';
+    import CryptoJS from 'crypto-js';
 
     import en from 'javascript-time-ago/locale/en';
     TimeAgo.addDefaultLocale(en)
     const timeAgo = new TimeAgo('en-US')
 
-    const accounts: Prisma.PanelAccountsSelect[] = $page.data.accounts;
+    const clients: Prisma.PanelClientSelect[] = $page.data.clients;
 
-    const newAccount = {
+    const newClient = {
+        name: {
+            value: "",
+            error: false,
+        },
         email: {
             value: "",
             error: false,
@@ -18,36 +23,37 @@
         password: {
             value: "",
             error: false,
-        }
+        },
+        phone: {
+            value: "",
+            error: false,
+        },
     };
 
-    const submitNewAccount = async (e) => {
-        e.currentTarget.disabled = true;
-        if (newAccount.email.value.length < 1) {
-            newAccount.email.error = true;
-            return;
-        }
+    const submitNewClient = async (e) => {
+        newClient.email.error = newClient.email.value.length < 1 ? true : false;
+        newClient.name.error = newClient.name.value.length < 1 ? true : false;
+        newClient.phone.error = newClient.phone.value.length < 1 ? true : false;
 
-        if (newAccount.password.value.length < 1) {
-            newAccount.password.error = true;
-            return;
-        }
+        if (newClient.email.error || newClient.name.error || newClient.phone.error) return;
 
-        newAccount.email.error = false;
-        newAccount.password.error = false;
+        newClient.email.error = false;
+        newClient.password.error = false;
+        newClient.phone.error = false;
+        newClient.name.error = false;
 
-        let response = await fetch(`/panel/${$page.data.panelId}/accounts/create/submit`, {
+        let response = await fetch(`/panel/${$page.data.panelId}/clients/create/submit`, {
             method: "POST",
-            body: JSON.stringify(newAccount),
+            body: JSON.stringify(newClient),
         }).then(r => r.json());
 
         if (response.result == "ok") window.location.reload();
     }
 </script>
 
-{#if accounts && accounts.length > 0}
+{#if clients && clients.length > 0}
 <div class="page-wrapper">
-  
+
     <div class="page-header d-print-none">
         <div class="container-xl">
             <div class="row g-2 align-items-center">
@@ -57,18 +63,18 @@
                         
                     </div>
                     <h2 class="page-title">
-                        Accounts
+                        Clients
                     </h2>
                 </div>
                 <!-- Page title actions -->
                 <div class="col-auto ms-auto d-print-none">
                     <div class="btn-list">
-                        <a href="#" class="btn btn-primary hidden sm:flex" data-bs-toggle="modal" data-bs-target="#modal-account">
+                        <a href="#" class="btn btn-primary hidden sm:flex" data-bs-toggle="modal" data-bs-target="#modal-client">
                             <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5l0 14"></path><path d="M5 12l14 0"></path></svg>
-                            Add new account
+                            Add new client
                         </a>
-                        <a href="#" class="btn btn-primary d-sm-none btn-icon" data-bs-toggle="modal" data-bs-target="#modal-account" aria-label="Create new report">
+                        <a href="#" class="btn btn-primary d-sm-none btn-icon" data-bs-toggle="modal" data-bs-target="#modal-client" aria-label="Create new report">
                             <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5l0 14"></path><path d="M5 12l14 0"></path></svg>
                         </a>
@@ -78,31 +84,27 @@
         </div>
     </div>
 
+
   <!-- Page body -->
   <div class="page-body">
     <div class="container-xl">
 
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">All Accounts</h3>
+                <h3 class="card-title">All Clients</h3>
             </div>
             <div class="list-group list-group-flush overflow-auto" style="max-height: 35rem">
-                {#each accounts as account}
+                {#each clients as client}
                     <div class="list-group-item">
                         <div class="row">
                             <div class="col-auto">
                                 <a href="#">
-                                    <span class="avatar" style="background-image: url(./static/avatars/023f.jpg)"></span>
+                                    <span class="avatar" style="background-image: url(https://www.gravatar.com/avatar/{CryptoJS.SHA256(client.email?.trim().toLowerCase()).toString()}?d=wavatar&f=y)"></span>
                                 </a>
                             </div>
                             <div class="col text-truncate">
-                                <a href="/panel/{$page.data.panelId}/accounts/{account.id}/edit" class="text-body d-block">{account.email}</a>
-                                <div class="text-secondary text-truncate mt-n1 flex items-center">
-                                    <span class="me-2 flex items-center gap-2">
-                                        <i class="i-tabler-clock text-[20px]"></i>
-                                        {timeAgo.format(account.expiresAt)}
-                                    </span>
-                                </div>
+                                <a href="/panel/{$page.data.panelId}/clients/{client.id}/edit" class="text-body d-block">{client.email}</a>
+                                <div class="text-secondary text-truncate mt-n1 flex items-center"></div>
                             </div>
                         </div>
                     </div>
@@ -113,7 +115,6 @@
     </div>
   </div>
 </div>
-
 {:else}
   <div class="page-wrapper">
       <!-- Page body -->
@@ -153,88 +154,57 @@
                 <path d="M640.36 287.951C638.93 310.59 624.628 332.93 601.002 350.178C579.177 366.095 549.387 377.694 514.391 381.184C508.167 370.155 502.23 358.967 496.585 347.632C494.726 343.928 492.909 340.181 491.079 336.362C483.928 321.46 477.664 307.044 472.129 293.271C487.689 298.377 551.975 318.442 589.932 302.152C596.811 299.206 610.541 293.4 612.486 282.13C613.048 278.08 612.317 273.956 610.398 270.345C608.798 267.347 607.829 264.053 607.55 260.666C607.271 257.279 607.688 253.871 608.776 250.652C609.864 247.432 611.599 244.469 613.876 241.946C616.152 239.422 618.92 237.392 622.011 235.978C640.46 260.177 640.861 279.87 640.36 287.951Z" fill="#0455A4" style="fill: #0455A4; fill: var(--tblr-illustrations-primary, var(--tblr-primary, #0455A4));"></path>
                 <path d="M601.002 350.178C579.177 366.095 549.387 377.694 514.39 381.184C511.347 375.792 508.372 370.361 505.466 364.894C501.376 357.2 497.519 349.634 493.896 342.197C505.942 349.292 519.121 354.256 532.854 356.871C555.749 361.042 579.355 358.723 601.002 350.178Z" fill="black" opacity="0.1"></path>
               </svg></div>
-            <p class="empty-title">No accounts found</p>
+            <p class="empty-title">No clients found</p>
             <p class="empty-subtitle text-secondary">
-              You don't added any account yet
+              You don't added any client yet
             </p>
             <div class="empty-action">
-              <a href="./." class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-account">
+              <a href="./." class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-client">
                 <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5l0 14"></path><path d="M5 12l14 0"></path></svg>
-                Add your first account
+                Add your first client
               </a>
             </div>
           </div>
         </div>
       </div>
-      <footer class="footer footer-transparent d-print-none">
-        <div class="container-xl">
-          <div class="row text-center align-items-center flex-row-reverse">
-            <div class="col-lg-auto ms-lg-auto">
-              <ul class="list-inline list-inline-dots mb-0">
-                <li class="list-inline-item"><a href="https://tabler.io/docs" target="_blank" class="link-secondary" rel="noopener">Documentation</a></li>
-                <li class="list-inline-item"><a href="./license.html" class="link-secondary">License</a></li>
-                <li class="list-inline-item"><a href="https://github.com/tabler/tabler" target="_blank" class="link-secondary" rel="noopener">Source code</a></li>
-                <li class="list-inline-item">
-                  <a href="https://github.com/sponsors/codecalm" target="_blank" class="link-secondary" rel="noopener">
-                    <!-- Download SVG icon from http://tabler-icons.io/i/heart -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon text-pink icon-filled icon-inline"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572"></path></svg>
-                    Sponsor
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div class="col-12 col-lg-auto mt-3 mt-lg-0">
-              <ul class="list-inline list-inline-dots mb-0">
-                <li class="list-inline-item">
-                  Copyright © 2024
-                  <a href="." class="link-secondary">Tabler</a>.
-                  All rights reserved.
-                </li>
-                <li class="list-inline-item">
-                  <a href="./changelog.html" class="link-secondary" rel="noopener">
-                    v1.0.0-beta21
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </footer>
+
     </div>
 {/if}
 
-  <div class="modal modal-blur fade" id="modal-account" tabindex="-1" style="display: none;" aria-hidden="true">
+  <div class="modal modal-blur fade" id="modal-client" tabindex="-1" style="display: none;" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">New Account</h5>
+          <h5 class="modal-title">New Client</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <div class="row">
-            <div class="col-lg-6">
-              <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input type="text" bind:value={newAccount.email.value} class="form-control" placeholder="Account email">
-              </div>
-            </div>
-            <div class="col-lg-6">
-              <div class="mb-3">
-                <label class="form-label">Password</label>
-                <input type="password" bind:value={newAccount.password.value} class="form-control" placeholder="Account password">
-              </div>
-            </div>
+          
+          <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" name="example-text-input" placeholder="Your client name" bind:value={newClient.name.value} class:is-invalid={newClient.name.error}>
           </div>
+
+          <div class="mb-3">
+            <label class="form-label">Account email</label>
+            <input type="text" bind:value={newClient.email.value} class="form-control" class:is-invalid={newClient.email.error}>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Phone number</label>
+            <input type="tel" class="form-control" autocomplete="off" bind:value={newClient.phone.value} class:is-invalid={newClient.phone.error}>
+          </div>
+
         </div>
         <div class="modal-footer">
           <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
             Cancel
           </a>
-          <a href="#" class="btn btn-primary ms-auto" on:click={submitNewAccount}>
+          <a href="#" class="btn btn-primary ms-auto" on:click={submitNewClient}>
             <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5l0 14"></path><path d="M5 12l14 0"></path></svg>
-            Create new account
+            Create new client
           </a>
         </div>
       </div>

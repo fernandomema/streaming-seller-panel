@@ -1,9 +1,12 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import Container from '$lib/components/Container.svelte';
     import { Prisma } from '@prisma/client'
 
     let panels: Prisma.PanelSelect[] = $page.data.panels;
+
+    if (panels && panels.length == 1) goto(`/panel/${panels[0].id}`);
 
 </script>
 
