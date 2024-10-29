@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import jwt from 'jsonwebtoken';
 import prisma from '$lib/prisma.js';
-import { createToken } from '$lib/tokenParser';
+import { createToken } from '$lib/utils/tokenParser';
 
 export const actions = {
 	login: async ({ cookies, request }) => {

@@ -1,5 +1,5 @@
 <script>
-  import { logoImageUrl } from '$lib/globalVars';
+  //import { logoImageUrl } from '$lib/globalVars';
 </script>
 <section class="bg-gray-50 dark:bg-gray-900">
   <div class="max-w-screen-xl px-4 py-8 mx-auto lg:grid lg:gap-20 lg:py-16 lg:grid-cols-12">
