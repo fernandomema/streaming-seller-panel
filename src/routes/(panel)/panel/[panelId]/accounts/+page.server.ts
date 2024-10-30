@@ -12,6 +12,9 @@ export async function load({ cookies, params }) {
 	const accounts = await prisma.panelAccounts.findMany({
         where: {
             panelId: parseInt(params.panelId)
+        },
+        include: {
+            platform: true,
         }
     })
     return {

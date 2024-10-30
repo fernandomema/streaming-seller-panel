@@ -31,7 +31,7 @@
             <a href="#" class="dropdown-item">Feedback</a>
             <div class="dropdown-divider"></div>
             <a href="./settings.html" class="dropdown-item">Settings</a>
-            <a href="./sign-in.html" class="dropdown-item">Logout</a>
+            <a href="/logout" class="dropdown-item">Logout</a>
           </div>
         </div>
       </div>
@@ -76,6 +76,26 @@
                       </span>
                     </a>
                 </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/panel/{panelId}/providers">
+                    <span class="nav-link-icon d-md-none d-lg-inline-block">
+                      <span class="i-tabler-user-dollar text-[20px]"></span>
+                    </span>
+                    <span class="nav-link-title">
+                      Providers
+                    </span>
+                  </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/panel/{panelId}/platforms">
+                  <span class="nav-link-icon d-md-none d-lg-inline-block">
+                    <span class="i-tabler-world text-[20px]"></span>
+                  </span>
+                  <span class="nav-link-title">
+                    Platforms
+                  </span>
+                </a>
+              </li>
               </ul>
             </div>
             <div class="col-2 d-none d-xxl-block">

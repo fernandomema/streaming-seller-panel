@@ -28,6 +28,9 @@ export async function load({ cookies, params }) {
     expiryThreshold.setDate(currentDate.getDate() + daysUntilExpiry);
     const accountsAboutToExpireCount = await prisma.panelAccounts.count({
         where: {
+            panelId: {
+                equals: panelId
+            },
             expiresAt: {
                 lte: expiryThreshold
             }

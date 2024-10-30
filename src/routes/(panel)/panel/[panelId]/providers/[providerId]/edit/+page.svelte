@@ -10,7 +10,7 @@
     TimeAgo.addDefaultLocale(en)
     const timeAgo = new TimeAgo('en-US')
 
-    const client: Prisma.PanelClientSelect = $page.data.client;
+    const provider: Prisma.PanelProviderSelect = $page.data.provider;
     const linkableAccounts: Prisma.PanelAccountsSelect[] = $page.data.linkableAccounts;
 
     let accountsToLink: number[] = [];
@@ -24,21 +24,20 @@
         console.log(accountsToLink);
     }
 
-    const deleteClient = async () => {
-      const response = await fetch(`/api/panel/${$page.params.panelId}/clients/${$page.params.clientId}/delete`).then(res => res.json());
-      console.log(response);
-      if (response.result == 'ok') goto(`/panel/${$page.params.panelId}/clients`);
+    const deleteProvider = async () => {
+      const response = await fetch(`/api/panel/${$page.params.panelId}/providers/${$page.params.providerId}/delete`).then(res => res.json());
+      if (response.result == 'ok') goto(`/panel/${$page.params.panelId}/providers`);
     };
 
     const linkAccounts = async () => {
         for (const accountId of accountsToLink) {
-            const response = await fetch(`/api/panel/${$page.params.panelId}/clients/${$page.params.clientId}/link-account/${accountId}`).then(res => res.json());
+            const response = await fetch(`/api/panel/${$page.params.panelId}/providers/${$page.params.providerId}/link-account/${accountId}`).then(res => res.json());
         }
         window.location.reload();
     };
 
     const unlinkAccount = async (accountId: number) => {
-        const response = await fetch(`/api/panel/${$page.params.panelId}/clients/${$page.params.clientId}/unlink-account/${accountId}`).then(res => res.json());
+        const response = await fetch(`/api/panel/${$page.params.panelId}/providers/${$page.params.providerId}/unlink-account/${accountId}`).then(res => res.json());
         window.location.reload();
     };
         
@@ -51,7 +50,7 @@
       <div class="row g-2 align-items-center">
         <div class="col">
           <h2 class="page-title">
-            Edit Client ({client.name})
+            Edit Provider ({provider.name})
           </h2>
         </div>
       </div>
@@ -64,7 +63,7 @@
         <div class="card">
 
             <div class="card-header">
-                <h3 class="card-title">Client</h3>
+                <h3 class="card-title">Provider</h3>
             </div>
 
             <div class="card-body">
@@ -72,22 +71,14 @@
                 <div class="mb-3">
                     <label class="form-label required">Name</label>
                     <div>
-                      <input type="text" class="form-control" aria-describedby="nameHelp" placeholder="Enter name" bind:value={client.name}>
+                      <input type="text" class="form-control" aria-describedby="nameHelp" placeholder="Enter name" bind:value={provider.name}>
                     </div>
                 </div>
 
+                <!-- notes -->
                 <div class="mb-3">
-                    <label class="form-label required">Email address</label>
-                    <div>
-                      <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Enter email" bind:value={client.email}>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label required">Phone</label>
-                    <div>
-                        <input type="tel" class="form-control" aria-describedby="PhoneHelp" placeholder="Enter client phone" bind:value={client.phone}>
-                    </div>
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-control" name="example-text-input" placeholder="Your notes" bind:value={provider.notes} class:is-invalid={provider.notes.error}></textarea>
                 </div>
 
             </div>
@@ -112,8 +103,10 @@
         <div class="card mt-4">
             <div class="card-header">
                 <div>
-                    <h3 class="card-title">Linked accounts</h3>
-                    <small>Accounts that the user has access to</small>
+                    <h3 class="card-title">Provided accounts</h3>
+                    <small>
+                        Accounts provided by {provider.name}
+                    </small>
                 </div>
                 {#if linkableAccounts && linkableAccounts.length > 0}
                     <div class="card-actions">
@@ -132,12 +125,12 @@
                 {/if}
             </div>
             <div class="list-group list-group-flush list-group-hoverable">
-                {#each client.accounts as account}
+                {#each provider.accounts as account}
                     <div class="list-group-item">
                         <div class="row align-items-center">
                             <div class="col-auto">
                                 <a href="/panel/{$page.params.panelId}/accounts/{account.id}/edit">
-                                    <i class="{account.platform?.icon} text-[40px]"></i>
+                                    <span class="avatar" style="background-image: url(./static/avatars/000m.jpg)"></span>
                                 </a>
                             </div>
                             <div class="col text-truncate">
@@ -178,7 +171,7 @@
           <div class="col"><a href="#" class="btn w-100" data-bs-dismiss="modal">
               Cancel
             </a></div>
-          <div class="col"><a href="#" class="btn btn-danger w-100" data-bs-dismiss="modal" on:click={deleteClient}>
+          <div class="col"><a href="#" class="btn btn-danger w-100" data-bs-dismiss="modal" on:click={deleteProvider}>
               Delete client
             </a></div>
         </div>
@@ -201,8 +194,8 @@
                             <div class="col-auto">
                                 <input type="checkbox" class="form-check-input" on:change={(e) => toggleAccountToLink(account.id, e.currentTarget.checked)}>
                             </div>
-                            <div class="col-auto bg-slate-200 rounded-md flex items-center w-[40px] h-[40px] p-1">
-                                <i class="{account.platform?.icon} text-[50px]"></i>
+                            <div class="col-auto">
+                                <span class="avatar" style="background-image: url(./static/avatars/003f.jpg)"></span>
                             </div>
                             <div class="col text-truncate">
                                 <span class="text-reset d-block">{account.email}</span>

@@ -15,7 +15,11 @@ export async function load({ cookies, params }) {
             id: parseInt(params.clientId)
         },
         include: {
-            accounts: true,
+            accounts: {
+                include: {
+                    platform: true
+                }
+            },
             accountsStatus: true
         }
     });
@@ -31,9 +35,9 @@ export async function load({ cookies, params }) {
         },
         include: {
             clients: true,
+            platform: true
         }
     });
-
 
     return {
         client: client,

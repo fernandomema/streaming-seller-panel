@@ -28,9 +28,10 @@ model Panel {
   clients PanelClient[]
   accounts PanelAccounts[]
   users AppUser[]
+  PanelProvider PanelProvider[]
+  PanelPlatform PanelPlatform[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
 }
 
 model PanelClient {
@@ -40,6 +41,7 @@ model PanelClient {
   email     String
   panel     Panel    @relation(fields: [panelId], references: [id])
   panelId   Int
+  notes     String?   @default("")
   accounts PanelAccounts[]
   accountsStatus ClientAccountStatus[]
   createdAt DateTime @default(now())
@@ -54,6 +56,14 @@ model PanelAccounts {
   panelId   Int
   email     String
   password  String
+  maxClients Int @default(1)
+  notes     String?   @default("")
+  buyCost Int @default(0)
+  sellPrice Int @default(0)
+  provider PanelProvider? @relation(fields: [providerId], references: [id])
+  providerId Int?
+  platform PanelPlatform? @relation(fields: [platformId], references: [id])
+  platformId Int?
   clients   PanelClient[]
   clientsStatus ClientAccountStatus[]
   activatedAt DateTime
@@ -70,4 +80,24 @@ model ClientAccountStatus {
   lastPayAt DateTime
   expiresAt DateTime
   note      String
+}
+
+model PanelProvider {
+  id      Int @id @default(autoincrement())
+  panel   Panel @relation(fields: [panelId], references: [id])
+  panelId Int
+  name    String
+  notes   String?
+
+  accounts PanelAccounts[]
+}
+
+model PanelPlatform {
+  id      Int @id @default(autoincrement())
+  panel   Panel? @relation(fields: [panelId], references: [id])
+  panelId Int?
+  name    String
+  icon    String
+
+  PanelAccounts PanelAccounts[]
 }

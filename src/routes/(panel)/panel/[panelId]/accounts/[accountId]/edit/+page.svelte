@@ -5,6 +5,7 @@
     import Spoiler from '$lib/components/Spoiler.svelte';
     import type { Prisma } from '@prisma/client';
     import TimeAgo from 'javascript-time-ago';
+    import CryptoJS from 'crypto-js';
 
     import en from 'javascript-time-ago/locale/en';
     TimeAgo.addDefaultLocale(en)
@@ -12,6 +13,8 @@
 
     const account: Prisma.PanelAccountsSelect = $page.data.account;
     const linkableClients: Prisma.PanelClientSelect[] = $page.data.linkableClients;
+    const linkableProviders: Prisma.PanelProviderSelect[] = $page.data.linkableProviders;
+    const linkablePlatforms: Prisma.PanelPlatformSelect[] = $page.data.linkablePlatforms;
 
     let clientsToLink: number[] = [];
 
@@ -96,6 +99,27 @@
                         {timeAgo.format(account.expiresAt)}
                     </small>
                 </div>
+
+                <!-- Providers -->
+                 <div class="mb-3">
+                    <label class="form-label">Provider</label>
+                    <select class="form-select" aria-label="Providers" bind:value={account.providerId}>
+                        {#each linkableProviders as provider}
+                            <option value={provider.id}>{provider.name}</option>
+                        {/each}
+                    </select>
+                </div>
+
+                <!-- Platform -->
+                 <div class="mb-3">
+                    <label class="form-label">Platform</label>
+                    <select class="form-select" aria-label="Platforms" bind:value={account.platformId}>
+                        {#each linkablePlatforms as platform}
+                            <option value={platform.id}>{platform.name}</option>
+                        {/each}
+                    </select>
+                </div>
+
             </div>
             <div class="card-footer">
               <div class="row align-items-center">
@@ -113,8 +137,8 @@
         <div class="card mt-4">
             <div class="card-header">
                 <div>
-                    <h3 class="card-title">Linked accounts</h3>
-                    <small>Accounts that the user has access to</small>
+                    <h3 class="card-title">Linked clients</h3>
+                    <small>Clients with acces to this account</small>
                 </div>
                 {#if linkableClients && linkableClients.length > 0}
                     <div class="card-actions">
@@ -138,7 +162,7 @@
                         <div class="row align-items-center">
                             <div class="col-auto">
                                 <a href="/panel/{$page.params.panelId}/clients/{client.id}/edit">
-                                    <span class="avatar" style="background-image: url(./static/avatars/000m.jpg)"></span>
+                                    <span class="avatar" style="background-image: url(https://www.gravatar.com/avatar/{CryptoJS.SHA256(client.email?.trim().toLowerCase()).toString()}?d=wavatar&f=y)"></span>
                                 </a>
                             </div>
                             <div class="col text-truncate">
@@ -147,7 +171,7 @@
                             </div>
                             <div class="col-auto">
                                 <a href="#" class="list-group-item-actions" on:click={() => unlinkAccount(client.id)}>
-                                    <i class="i-tabler-trash text-[24px] text-red-400"></i>
+                                    <i class="i-tabler-unlink text-[24px] text-red-400"></i>
                                 </a>
                             </div>
                         </div>

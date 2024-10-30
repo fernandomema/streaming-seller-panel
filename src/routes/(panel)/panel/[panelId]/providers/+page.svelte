@@ -3,51 +3,46 @@
     import Spoiler from '$lib/components/Spoiler.svelte';
     import type { Prisma } from '@prisma/client';
     import TimeAgo from 'javascript-time-ago';
+    import CryptoJS from 'crypto-js';
 
     import en from 'javascript-time-ago/locale/en';
     TimeAgo.addDefaultLocale(en)
     const timeAgo = new TimeAgo('en-US')
 
-    const accounts: Prisma.PanelAccountsSelect[] = $page.data.accounts;
+    const providers: Prisma.PanelProviderSelect[] = $page.data.providers; 
 
-    const newAccount = {
-        email: {
+    const newProvider: any = {
+        name: {
             value: "",
             error: false,
         },
-        password: {
+        notes: {
             value: "",
             error: false,
-        }
+        },
     };
 
-    const submitNewAccount = async (e) => {
-        e.currentTarget.disabled = true;
-        if (newAccount.email.value.length < 1) {
-            newAccount.email.error = true;
-            return;
-        }
+    const submitNewProvider = async (e) => {
+        newProvider.name.error = newProvider.name.value.length < 1 ? true : false;
 
-        if (newAccount.password.value.length < 1) {
-            newAccount.password.error = true;
-            return;
-        }
+        const anyError = Object.values(newProvider).find((input: any) => input.error); 
+        if (anyError) return;
 
-        newAccount.email.error = false;
-        newAccount.password.error = false;
+        Object.keys(newProvider).forEach(key => newProvider[key].error = false);
 
-        let response = await fetch(`/panel/${$page.data.panelId}/accounts/create/submit`, {
+        let response = await fetch(`/panel/${$page.data.panelId}/providers/create/submit`, {
             method: "POST",
-            body: JSON.stringify(newAccount),
+            body: JSON.stringify(newProvider),
         }).then(r => r.json());
 
         if (response.result == "ok") window.location.reload();
+        if (response.result == "error") console.error(response.message);
     }
 </script>
 
-{#if accounts && accounts.length > 0}
+{#if providers && providers.length > 0}
 <div class="page-wrapper">
-  
+
     <div class="page-header d-print-none">
         <div class="container-xl">
             <div class="row g-2 align-items-center">
@@ -57,18 +52,18 @@
                         
                     </div>
                     <h2 class="page-title">
-                        Accounts
+                        Providers
                     </h2>
                 </div>
                 <!-- Page title actions -->
                 <div class="col-auto ms-auto d-print-none">
                     <div class="btn-list">
-                        <a href="#" class="btn btn-primary hidden sm:flex" data-bs-toggle="modal" data-bs-target="#modal-account">
+                        <a href="#" class="btn btn-primary hidden sm:flex" data-bs-toggle="modal" data-bs-target="#modal-provider">
                             <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5l0 14"></path><path d="M5 12l14 0"></path></svg>
-                            Add new account
+                            Add new provider
                         </a>
-                        <a href="#" class="btn btn-primary d-sm-none btn-icon" data-bs-toggle="modal" data-bs-target="#modal-account" aria-label="Create new report">
+                        <a href="#" class="btn btn-primary d-sm-none btn-icon" data-bs-toggle="modal" data-bs-target="#modal-provider" aria-label="Create new Provider">
                             <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5l0 14"></path><path d="M5 12l14 0"></path></svg>
                         </a>
@@ -78,29 +73,27 @@
         </div>
     </div>
 
+
   <!-- Page body -->
   <div class="page-body">
     <div class="container-xl">
 
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">All Accounts</h3>
+                <h3 class="card-title">All Proivders</h3>
             </div>
             <div class="list-group list-group-flush overflow-auto" style="max-height: 35rem">
-                {#each accounts as account}
+                {#each providers as provider}
                     <div class="list-group-item">
                         <div class="row">
-                            <div class="col-auto bg-slate-200 rounded-md flex items-center w-[40px] h-[40px] p-1">
-                                <i class="{account.platform?.icon} text-[50px]"></i>
+                            <div class="col-auto">
+                                <a href="#">
+                                    <span class="avatar" style="background-image: url(https://www.gravatar.com/avatar/{CryptoJS.SHA256(provider.email?.trim().toLowerCase()).toString()}?d=wavatar&f=y)"></span>
+                                </a>
                             </div>
                             <div class="col text-truncate">
-                                <a href="/panel/{$page.data.panelId}/accounts/{account.id}/edit" class="text-body d-block">{account.email}</a>
-                                <div class="text-secondary text-truncate mt-n1 flex items-center">
-                                    <span class="me-2 flex items-center gap-2">
-                                        <i class="i-tabler-clock text-[20px]"></i>
-                                        {timeAgo.format(account.expiresAt)}
-                                    </span>
-                                </div>
+                                <a href="/panel/{$page.data.panelId}/providers/{provider.id}/edit" class="text-body d-block">{provider.name}</a>
+                                <div class="text-secondary text-truncate mt-n1 flex items-center"></div>
                             </div>
                         </div>
                     </div>
@@ -111,7 +104,6 @@
     </div>
   </div>
 </div>
-
 {:else}
   <div class="page-wrapper">
       <!-- Page body -->
@@ -151,54 +143,53 @@
                 <path d="M640.36 287.951C638.93 310.59 624.628 332.93 601.002 350.178C579.177 366.095 549.387 377.694 514.391 381.184C508.167 370.155 502.23 358.967 496.585 347.632C494.726 343.928 492.909 340.181 491.079 336.362C483.928 321.46 477.664 307.044 472.129 293.271C487.689 298.377 551.975 318.442 589.932 302.152C596.811 299.206 610.541 293.4 612.486 282.13C613.048 278.08 612.317 273.956 610.398 270.345C608.798 267.347 607.829 264.053 607.55 260.666C607.271 257.279 607.688 253.871 608.776 250.652C609.864 247.432 611.599 244.469 613.876 241.946C616.152 239.422 618.92 237.392 622.011 235.978C640.46 260.177 640.861 279.87 640.36 287.951Z" fill="#0455A4" style="fill: #0455A4; fill: var(--tblr-illustrations-primary, var(--tblr-primary, #0455A4));"></path>
                 <path d="M601.002 350.178C579.177 366.095 549.387 377.694 514.39 381.184C511.347 375.792 508.372 370.361 505.466 364.894C501.376 357.2 497.519 349.634 493.896 342.197C505.942 349.292 519.121 354.256 532.854 356.871C555.749 361.042 579.355 358.723 601.002 350.178Z" fill="black" opacity="0.1"></path>
               </svg></div>
-            <p class="empty-title">No accounts found</p>
+            <p class="empty-title">No providers found</p>
             <p class="empty-subtitle text-secondary">
-              You don't added any account yet
+              You don't added any provider yet
             </p>
             <div class="empty-action">
-              <a href="./." class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-account">
+              <a href="./." class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-provider">
                 <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5l0 14"></path><path d="M5 12l14 0"></path></svg>
-                Add your first account
+                Add your first provider
               </a>
             </div>
           </div>
         </div>
       </div>
+
     </div>
 {/if}
 
-  <div class="modal modal-blur fade" id="modal-account" tabindex="-1" style="display: none;" aria-hidden="true">
+  <div class="modal modal-blur fade" id="modal-provider" tabindex="-1" style="display: none;" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">New Account</h5>
+          <h5 class="modal-title">New Provider</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <div class="row">
-            <div class="col-lg-6">
-              <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input type="text" bind:value={newAccount.email.value} class="form-control" placeholder="Account email">
-              </div>
-            </div>
-            <div class="col-lg-6">
-              <div class="mb-3">
-                <label class="form-label">Password</label>
-                <input type="password" bind:value={newAccount.password.value} class="form-control" placeholder="Account password">
-              </div>
-            </div>
-          </div>
+          
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" name="example-text-input" placeholder="Your provider name" bind:value={newProvider.name.value} class:is-invalid={newProvider.name.error}>
+        </div>
+
+          <!-- notes -->
+        <div class="mb-3">
+            <label class="form-label">Notes</label>
+            <textarea class="form-control" name="example-text-input" placeholder="Your notes" bind:value={newProvider.notes.value} class:is-invalid={newProvider.notes.error}></textarea>
+        </div>
+
         </div>
         <div class="modal-footer">
           <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
             Cancel
           </a>
-          <a href="#" class="btn btn-primary ms-auto" on:click={submitNewAccount}>
+          <a href="#" class="btn btn-primary ms-auto" on:click={submitNewProvider}>
             <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5l0 14"></path><path d="M5 12l14 0"></path></svg>
-            Create new account
+            Create new provider
           </a>
         </div>
       </div>

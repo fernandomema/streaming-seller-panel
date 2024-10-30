@@ -4,11 +4,7 @@ import { decodeToken, isTokenValid } from '$lib/utils/tokenParser';
 import { userHasAccessOnPanel } from '$lib/utils/authValidation';
 
 export async function load({ cookies, params }) {
-    const token =  cookies.get('token');
-    if (!token || !isTokenValid(token)) return redirect(302, '/login');
-    const userId = decodeToken(token)!.userId;
-    const userHasAccess = await userHasAccessOnPanel(userId, params.panelId);
-    if (!userHasAccess) return redirect(302, '/login');
+   
 	const account = await prisma.panelAccounts.findFirst({
         where: {
             id: parseInt(params.accountId)
@@ -33,8 +29,28 @@ export async function load({ cookies, params }) {
         }
     });
 
+    const linkableProviders = await prisma.panelProvider.findMany({
+        where: {
+            panelId: parseInt(params.panelId),
+        },
+        include: {
+            accounts: true,
+        }
+    });
+
+    const linkablePlatforms = await prisma.panelPlatform.findMany({
+        where: {
+            OR: [
+                { panelId: parseInt(params.panelId) },
+                { panelId: null }
+            ]
+        }
+    });
+
     return {
         account: account,
-        linkableClients: linkableClients
+        linkableClients: linkableClients,
+        linkableProviders: linkableProviders,
+        linkablePlatforms: linkablePlatforms
     };
 }
