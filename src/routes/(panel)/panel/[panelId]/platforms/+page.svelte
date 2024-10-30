@@ -24,7 +24,6 @@
 
     const submitNewPlatform = async (e) => {
         newPlatform.name.error = newPlatform.name.value.length < 1 ? true : false;
-
         const anyError = Object.values(newPlatform).find((input: any) => input.error); 
         if (anyError) return;
 

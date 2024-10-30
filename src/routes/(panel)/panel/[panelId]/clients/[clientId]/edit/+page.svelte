@@ -2,6 +2,7 @@
   import { goto, invalidateAll } from '$app/navigation';
     import { page } from '$app/stores';
   import Modal from '$lib/components/modals/Modal.svelte';
+  import PhoneInput from '$lib/components/PhoneInput.svelte';
     import Spoiler from '$lib/components/Spoiler.svelte';
     import type { Prisma } from '@prisma/client';
     import TimeAgo from 'javascript-time-ago';
@@ -41,6 +42,8 @@
         const response = await fetch(`/api/panel/${$page.params.panelId}/clients/${$page.params.clientId}/unlink-account/${accountId}`).then(res => res.json());
         window.location.reload();
     };
+
+    let test = "";
         
 </script>
 
@@ -82,13 +85,12 @@
                       <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Enter email" bind:value={client.email}>
                     </div>
                 </div>
-
-                <div class="mb-3">
-                  <label class="form-label required">Phone</label>
-                    <div>
-                        <input type="tel" class="form-control" aria-describedby="PhoneHelp" placeholder="Enter client phone" bind:value={client.phone}>
-                    </div>
+                
+                <div class="mb-3 w-full">
+                    <label class="form-label">Phone</label>
+                    <PhoneInput bind:value={client.phone}></PhoneInput> 
                 </div>
+                {test}
 
             </div>
 

@@ -6,12 +6,13 @@
     import CryptoJS from 'crypto-js';
 
     import en from 'javascript-time-ago/locale/en';
+  import PhoneInput from '$lib/components/PhoneInput.svelte';
     TimeAgo.addDefaultLocale(en)
     const timeAgo = new TimeAgo('en-US')
 
     const clients: Prisma.PanelClientSelect[] = $page.data.clients;
 
-    const newClient = {
+    const newClient:any = {
         name: {
             value: "",
             error: false,
@@ -33,14 +34,11 @@
     const submitNewClient = async (e) => {
         newClient.email.error = newClient.email.value.length < 1 ? true : false;
         newClient.name.error = newClient.name.value.length < 1 ? true : false;
-        newClient.phone.error = newClient.phone.value.length < 1 ? true : false;
 
-        if (newClient.email.error || newClient.name.error || newClient.phone.error) return;
+        const anyError = Object.values(newClient).find((input: any) => input.error); 
+        if (anyError) return;
 
-        newClient.email.error = false;
-        newClient.password.error = false;
-        newClient.phone.error = false;
-        newClient.name.error = false;
+        Object.keys(newClient).forEach(key => newClient[key].error = false);
 
         let response = await fetch(`/panel/${$page.data.panelId}/clients/create/submit`, {
             method: "POST",
@@ -103,8 +101,10 @@
                                 </a>
                             </div>
                             <div class="col text-truncate">
-                                <a href="/panel/{$page.data.panelId}/clients/{client.id}/edit" class="text-body d-block">{client.email}</a>
-                                <div class="text-secondary text-truncate mt-n1 flex items-center"></div>
+                                <a href="/panel/{$page.data.panelId}/clients/{client.id}/edit" class="text-body d-block">{client.name}</a>
+                                <div class="text-secondary text-truncate mt-n1 flex items-center">
+                                  {client.email}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -193,7 +193,7 @@
 
           <div class="mb-3">
             <label class="form-label">Phone number</label>
-            <input type="tel" class="form-control" autocomplete="off" bind:value={newClient.phone.value} class:is-invalid={newClient.phone.error}>
+            <PhoneInput bind:value={newClient.phone.value} bind:error={newClient.phone.error}></PhoneInput> 
           </div>
 
         </div>
