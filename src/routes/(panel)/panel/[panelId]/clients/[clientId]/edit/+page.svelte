@@ -14,13 +14,14 @@
     const client: Prisma.PanelClientSelect = $page.data.client;
     const linkableAccounts: Prisma.PanelAccountsSelect[] = $page.data.linkableAccounts;
 
-    let accountsToLink: number[] = [];
+    let accountsToLink: any[] = [];
 
-    const toggleAccountToLink = async (accountId: number, checked: boolean) => {
+    const toggleAccountToLink = async (toggleAccount: any, checked: boolean) => {
         if (checked) {
-            accountsToLink.push(accountId);
+            accountsToLink.push({id: toggleAccount.id});
+            accountsToLink = accountsToLink;
         } else {
-            accountsToLink = accountsToLink.filter(id => id != accountId);
+            accountsToLink = accountsToLink.filter(account => account.id != toggleAccount.id);
         }
         console.log(accountsToLink);
     }
@@ -32,8 +33,14 @@
     };
 
     const linkAccounts = async () => {
-        for (const accountId of accountsToLink) {
-            const response = await fetch(`/api/panel/${$page.params.panelId}/clients/${$page.params.clientId}/link-account/${accountId}`).then(res => res.json());
+        for (const account of accountsToLink) {
+            const response = await fetch(`/api/panel/${$page.params.panelId}/clients/${$page.params.clientId}/link-account/${account.id}`, {
+                method: "POST",
+                body: JSON.stringify({
+                    notes: account.notes || '',
+                    billingCycle: account.billingCycle || 'monthly',
+                }),
+            }).then(res => res.json());
         }
         window.location.reload();
     };
@@ -150,9 +157,22 @@
                                 </div>
                             </div>
                             <div class="col-auto">
-                                <a href="#" class="list-group-item-actions" on:click={() => unlinkAccount(account.id)}>
-                                    <i class="i-tabler-unlink text-[24px] text-red-400"></i>
-                                </a>
+                                <div class="dropdown">
+                                    <button class="btn dropdown-toggle align-text-top" data-bs-toggle="dropdown">
+                                        Actions
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-end">
+                                        <a href="/panel/{$page.params.panelId}/accounts/{account.id}/edit" class="dropdown-item flex gap-1">
+                                            <i class="i-tabler-eye text-[24px] text-blue-300"></i> View account
+                                        </a>
+                                        <a href="/panel/{$page.params.panelId}/clients/{client.id}/accounts/{account.id}" class="dropdown-item flex gap-1">  
+                                            <i class="i-tabler-eye text-[24px] text-blue-300"></i> View details
+                                        </a>
+                                        <a href="#" class="dropdown-item flex gap-1" on:click={() => unlinkAccount(account.id)}>
+                                            <i class="i-tabler-unlink text-[24px] text-red-400"></i> Unlink
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -201,7 +221,7 @@
                     <label class="list-group-item cursor-pointer">
                         <div class="row align-items-center">
                             <div class="col-auto">
-                                <input type="checkbox" class="form-check-input" on:change={(e) => toggleAccountToLink(account.id, e.currentTarget.checked)}>
+                                <input type="checkbox" class="form-check-input" on:change={(e) => toggleAccountToLink(account, e.currentTarget.checked)}>
                             </div>
                             <div class="col-auto bg-slate-200 rounded-md flex items-center w-[40px] h-[40px] p-1">
                                 <i class="{account.platform?.icon} text-[50px]"></i>
@@ -220,6 +240,23 @@
                                 </div>
                             </div>
                         </div>
+                        {#if accountsToLink.find(a => a.id == account.id)}
+                        <!-- form with billing cycle, notes -->
+                            <div class="row align-items-center">
+                                <!-- input with billing cycle -->
+                                 <div class="mt-3">
+                                    <label class="form-label">Billing cycle</label>
+                                    <select class="form-select" aria-label="Default select example">
+                                        <option value="monthly">Monthly</option>
+                                        <option value="yearly">Yearly</option>
+                                    </select>
+                                 </div>
+                                 <div class="mt-3">
+                                    <label class="form-label">Notes</label>
+                                    <textarea class="form-control" placeholder="Your notes" bind:value={account.notes}></textarea>
+                                </div>
+                            </div>
+                        {/if}
                     </label>
                 {/each}
             </div>

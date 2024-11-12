@@ -47,19 +47,61 @@
                 <div class="mb-3">
                     <label class="form-label required">Name</label>
                     <div>
-                      <input type="text" class="form-control" aria-describedby="nameHelp" placeholder="Enter name" bind:value={platform.name}>
+                        <div class="input-group mb-2">
+                            <div class="dropdown">
+                                <a href="#" class="btn dropdown-toggle w-full justify-start" data-bs-toggle="dropdown">
+                                    <i class="text-[24px] {platform.icon}"></i>
+                                </a>
+                                <div class="dropdown-menu">
+                                    <button on:click={() => platform.icon = 'i-tabler-brand-spotify text-green'} class="dropdown-item" href="#">
+                                        <i class="text-[24px] i-tabler-brand-spotify text-green"></i> Spotify
+                                    </button>
+                                    <button on:click={() => platform.icon = 'i-tabler-brand-amazon text-orange'} class="dropdown-item" href="#">
+                                        <i class="text-[24px] i-tabler-brand-amazon text-orange"></i> Amazon
+                                    </button>
+                                    <button on:click={() => platform.icon = 'i-tabler-brand-netflix text-red'} class="dropdown-item" href="#">
+                                        <i class="text-[24px] i-tabler-brand-netflix text-red"></i> Netflix
+                                    </button>
+                                    <button on:click={() => platform.icon = 'i-tabler-brand-apple text-red'} class="dropdown-item" href="#">
+                                        <i class="text-[24px] i-tabler-brand-apple text-red"></i> Apple
+                                    </button>
+                                    <button on:click={() => platform.icon = 'i-tabler-brand-google text-red'} class="dropdown-item" href="#">
+                                        <i class="text-[24px] i-tabler-brand-google text-red"></i> Google
+                                    </button>
+                                    <button on:click={() => platform.icon = 'i-tabler-brand-youtube text-red'} class="dropdown-item" href="#">
+                                        <i class="text-[24px] i-tabler-brand-youtube text-red"></i> Youtube
+                                    </button>
+                                    <button on:click={() => platform.icon = 'i-tabler-brand-discord text-purple'} class="dropdown-item" href="#">
+                                        <i class="text-[24px] i-tabler-brand-discord text-purple"></i> Discord
+                                    </button>
+                                    <button on:click={() => platform.icon = 'i-tabler-brand-twitch text-purple'} class="dropdown-item" href="#">
+                                        <i class="text-[24px] i-tabler-brand-twitch text-purple"></i> Twitch
+                                    </button>
+                                    <button on:click={() => platform.icon = 'i-tabler-brand-vimeo text-blue'} class="dropdown-item" href="#">
+                                        <i class="text-[24px] i-tabler-brand-vimeo text-blue"></i> Vimeo
+                                    </button>
+                                    <button on:click={() => platform.icon = 'i-tabler-brand-twitter text-blue'} class="dropdown-item" href="#">
+                                        <i class="text-[24px] i-tabler-brand-twitter text-blue"></i> Twitter
+                                    </button>
+                                    <button on:click={() => platform.icon = 'i-tabler-brand-facebook text-blue'} class="dropdown-item" href="#">
+                                        <i class="text-[24px] i-tabler-brand-facebook text-blue"></i> Facebook
+                                    </button>
+                                    <button on:click={() => platform.icon = 'i-tabler-brand-disney text-red'} class="dropdown-item" href="#">
+                                        <i class="text-[24px] i-tabler-brand-disney text-red"></i> Disney+
+                                    </button>
+                                    <button on:click={() => platform.icon = 'i-tabler-brand-deezer text-red'} class="dropdown-item" href="#">
+                                        <i class="text-[24px] i-tabler-brand-deezer text-red"></i> Deezer
+                                    </button>
+                                    <button on:click={() => platform.icon = 'i-tabler-brand-steam text-red'} class="dropdown-item" href="#">
+                                        <i class="text-[24px] i-tabler-brand-steam text-red"></i> Steam
+                                    </button>
+                                </div>
+                            </div>
+                            <input type="text" class="form-control" aria-describedby="nameHelp" placeholder="Enter name" bind:value={platform.name}>
+                        </div>
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Icon</label>
-                    <div class="input-group mb-2">
-                        <span class="input-group-text">
-                            <i class="text-[24px] {platform.icon}"></i>
-                        </span>
-                        <input type="text" class="form-control" placeholder="icon name" bind:value={platform.icon}>
-                    </div>
-                </div>
             </div>
 
             <div class="card-footer">

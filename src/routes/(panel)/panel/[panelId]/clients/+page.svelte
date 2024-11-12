@@ -6,7 +6,7 @@
     import CryptoJS from 'crypto-js';
 
     import en from 'javascript-time-ago/locale/en';
-  import PhoneInput from '$lib/components/PhoneInput.svelte';
+    import PhoneInput from '$lib/components/PhoneInput.svelte';
     TimeAgo.addDefaultLocale(en)
     const timeAgo = new TimeAgo('en-US')
 
@@ -21,14 +21,14 @@
             value: "",
             error: false,
         },
-        password: {
-            value: "",
-            error: false,
-        },
         phone: {
             value: "",
             error: false,
         },
+        notes: {
+            value: "",
+            error: false,
+        }
     };
 
     const submitNewClient = async (e) => {
@@ -187,13 +187,18 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Account email</label>
+            <label class="form-label">Client email</label>
             <input type="text" bind:value={newClient.email.value} class="form-control" class:is-invalid={newClient.email.error}>
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Phone number</label>
+            <label class="form-label">Client Phone number</label>
             <PhoneInput bind:value={newClient.phone.value} bind:error={newClient.phone.error}></PhoneInput> 
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Notes</label>
+            <textarea bind:value={newClient.notes.value} class="form-control" class:is-invalid={newClient.notes.error}></textarea>
           </div>
 
         </div>

@@ -77,9 +77,10 @@ model ClientAccountStatus {
   clientId  Int
   account   PanelAccounts @relation(fields: [accountId], references: [id])
   accountId Int
-  lastPayAt DateTime
-  expiresAt DateTime
-  note      String
+  billingCycle String @default("monthly") @db.VarChar(10)
+  status    String @default("active") @db.VarChar(10)
+  notes      String
+  payments PanelClientAccountPayment[]
 }
 
 model PanelProvider {
@@ -100,4 +101,14 @@ model PanelPlatform {
   icon    String
 
   PanelAccounts PanelAccounts[]
+}
+
+model PanelClientAccountPayment {
+  id          Int   @id @default(autoincrement())
+  clientAccountStatus ClientAccountStatus @relation(fields: [clientAccountStatusId], references: [id])
+  clientAccountStatusId Int
+  amount      Int
+  paymentDate DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

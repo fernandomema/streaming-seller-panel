@@ -4,6 +4,7 @@
     import type { Prisma } from '@prisma/client';
     import TimeAgo from 'javascript-time-ago';
     import CryptoJS from 'crypto-js';
+    import PhoneInput from '$lib/components/PhoneInput.svelte';
 
     import en from 'javascript-time-ago/locale/en';
     TimeAgo.addDefaultLocale(en)
@@ -12,14 +13,11 @@
     const providers: Prisma.PanelProviderSelect[] = $page.data.providers; 
 
     const newProvider: any = {
-        name: {
-            value: "",
-            error: false,
-        },
-        notes: {
-            value: "",
-            error: false,
-        },
+        name: { value: "", error: false },
+        notes: { value: "", error: false },
+        email: { value: "", error: false },
+        phone: { value: "", error: false },
+        platforms: { value: [], error: false },
     };
 
     const submitNewProvider = async (e) => {
@@ -171,8 +169,18 @@
         <div class="modal-body">
           
         <div class="mb-3">
-            <label class="form-label">Name</label>
+            <label class="form-label required">Name</label>
             <input type="text" class="form-control" name="example-text-input" placeholder="Your provider name" bind:value={newProvider.name.value} class:is-invalid={newProvider.name.error}>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="text" class="form-control" name="example-text-input" placeholder="Your provider email" bind:value={newProvider.email.value} class:is-invalid={newProvider.email.error}>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Phone number</label>
+            <PhoneInput bind:value={newProvider.phone.value} bind:error={newProvider.phone.error}></PhoneInput> 
         </div>
 
           <!-- notes -->

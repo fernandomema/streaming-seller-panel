@@ -3,7 +3,8 @@ import prisma from '$lib/prisma';
 import { decodeToken, isTokenValid } from '$lib/utils/tokenParser';
 import { userHasAccessOnPanel } from '$lib/utils/authValidation';
 
-export async function GET({ request, cookies, params }) {
+export async function POST({ request, cookies, params }) {
+    const { billingCycle, notes } = await request.json();
     const client = await prisma.panelClient.findFirst({
         where: {
             id: parseInt(params.clientId),
@@ -21,7 +22,7 @@ export async function GET({ request, cookies, params }) {
     if (!account) return json({result: "error", message: "Account not found"});
     if (account.panelId != parseInt(params.panelId)) return json({result: "error", message: "You cannot modify this account"});
 
-    await prisma.panelAccounts.update({
+    const accountUpdated = await prisma.panelAccounts.update({
         where: {
             id: accountId,
         },
@@ -36,6 +37,19 @@ export async function GET({ request, cookies, params }) {
             clients: true,
         }
     });
+
+    if (!account) return json({result: "error", message: "Error updating account"});
+    const clientAccountStatus = await prisma.clientAccountStatus.create({
+        data: {
+          clientId: client.id,
+          accountId: account.id,
+          billingCycle: billingCycle || "monthly",
+          notes: notes || "",
+        }
+    });
+
+    if (!clientAccountStatus) return json({result: "error", message: "Error creating client account status"});
+    
 
     return json({
         result: "ok"
