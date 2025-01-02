@@ -12,9 +12,13 @@
     export let valid: boolean = true;
     export let error: boolean = false;
 
+    let lastCountries: CountryInterface[] = [];
+
     const setSelectedCountry = (newSelectedCountry: CountryInterface) => {
         selectedCountry = newSelectedCountry;
         country = selectedCountry.code;
+        const selectedCountryHistory = JSON.parse(localStorage.getItem("selectedCountryHistory") || "[]");
+        localStorage.setItem("selectedCountryHistory", JSON.stringify([selectedCountry, ...selectedCountryHistory.filter(country => country.code !== selectedCountry.code)]));
         updateValue();
     }
 
@@ -26,6 +30,7 @@
 
     onMount(() => {
         if (value) setValue(value);
+        lastCountries = JSON.parse(localStorage.getItem("selectedCountryHistory") || "[]");
     })
 
     const setValue = (newValue: string) => {
@@ -49,8 +54,17 @@
     </button> 
     <input type="text" class="form-control" bind:value={phone} placeholder="Phone number" on:keyup={updateValue} class:is-invalid={!valid}>
     <div class="dropdown-menu dropdown-menu-start max-h-[250px] overflow-y-scroll" style="">
+        {#if lastCountries && lastCountries.length > 0}
+            {#each lastCountries as country}
+                <button type="button" class="dropdown-item" on:click="{() => setSelectedCountry(country)}">
+                    {country.flag} {country.name}
+                </button>
+            {/each}
+            <hr>
+        {/if}
         {#each countries as country}
-            <button class="dropdown-item" on:click="{() => setSelectedCountry(country)}">
+            
+            <button type="button" class="dropdown-item" on:click="{() => setSelectedCountry(country)}">
                 {country.flag} {country.name}
             </button>
         {/each}
