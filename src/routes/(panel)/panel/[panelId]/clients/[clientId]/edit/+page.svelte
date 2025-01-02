@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { goto, invalidateAll } from '$app/navigation';
+    import { enhance } from '$app/forms';
+    import { goto } from '$app/navigation';
     import { page } from '$app/stores';
-  import Modal from '$lib/components/modals/Modal.svelte';
-  import PhoneInput from '$lib/components/PhoneInput.svelte';
-    import Spoiler from '$lib/components/Spoiler.svelte';
+    import Modal from '$lib/components/modals/Modal.svelte';
+    import PhoneInput from '$lib/components/PhoneInput.svelte';
     import type { Prisma } from '@prisma/client';
     import TimeAgo from 'javascript-time-ago';
 
@@ -48,10 +48,8 @@
     const unlinkAccount = async (accountId: number) => {
         const response = await fetch(`/api/panel/${$page.params.panelId}/clients/${$page.params.clientId}/unlink-account/${accountId}`).then(res => res.json());
         window.location.reload();
-    };
+    };      
 
-    let test = "";
-        
 </script>
 
 <div class="page-wrapper">
@@ -77,29 +75,34 @@
                 <h3 class="card-title">Client</h3>
             </div>
 
-            <div class="card-body">
+            <form class="card-body" method="post" action="?/edit" id="editClientForm">
 
                 <div class="mb-3">
                     <label class="form-label required">Name</label>
                     <div>
-                      <input type="text" class="form-control" aria-describedby="nameHelp" placeholder="Enter name" bind:value={client.name}>
+                      <input type="text" class="form-control" aria-describedby="nameHelp" placeholder="Enter name" name="name" bind:value={client.name}>
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label required">Email address</label>
                     <div>
-                      <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Enter email" bind:value={client.email}>
+                      <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Enter email" name="email" bind:value={client.email}>
                     </div>
                 </div>
                 
                 <div class="mb-3 w-full">
                     <label class="form-label">Phone</label>
                     <PhoneInput bind:value={client.phone}></PhoneInput> 
+                    <input type="hidden" name="phone" value={client.phone}>
                 </div>
-                {test}
 
-            </div>
+                <div class="mb-3">
+                    <label class="form-label">Notes</label>
+                    <textarea name="notes" bind:value={client.notes} class="form-control"></textarea>
+                </div>
+
+            </form>
 
             <div class="card-footer">
                 <div class="row align-items-center">
@@ -108,7 +111,7 @@
                         <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
                             Delete
                         </button>
-                        <button class="btn btn-primary">
+                        <button class="btn btn-primary" type="submit" form="editClientForm">
                             Save
                         </button>
                     </div>

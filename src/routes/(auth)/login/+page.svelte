@@ -1,41 +1,16 @@
+<script>
+
+    import { Config } from "$lib/Config";
+
+</script>
 <section class="bg-gray-50 dark:bg-gray-900">
     <div class="max-w-screen-xl px-4 py-8 mx-auto lg:grid lg:gap-20 lg:py-16 lg:grid-cols-12">
         <div class="flex-col justify-between hidden col-span-6 mr-auto lg:flex xl:mb-0">
             <div>
                 <a href="/" class="inline-flex items-center mb-6 text-2xl font-semibold text-gray-900 lg:mb-10 dark:text-white">
                     <img class="w-8 h-8 mr-2" src="https://docs.zumito.dev/_astro/zumito-hi.CVPMU07h_16SD6a.webp" alt="logo">
-                    Zumito Modules
+                    {Config.appName}
                 </a>
-                <div class="flex">
-                    <svg class="w-5 h-5 mr-2 text-pink-600 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                    </svg>
-                    <div>
-                        <h3 class="mb-2 text-xl font-bold leading-none text-gray-900 dark:text-white">Get started quickly</h3>
-                        <p class="mb-2 font-light text-gray-500 dark:text-gray-400">Integrate with developer-friendly APIs or choose low-code.</p>
-                    </div>
-                </div>
-                <div class="flex pt-8">
-                    <svg class="w-5 h-5 mr-2 text-pink-600 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                    </svg>
-                    <div>
-                        <h3 class="mb-2 text-xl font-bold leading-none text-gray-900 dark:text-white">Support any business model</h3>
-                        <p class="mb-2 font-light text-gray-500 dark:text-gray-400">Host code that you don't want to share with the world in private.</p>
-                    </div>
-                </div>
-                <div class="flex pt-8">
-                    <svg class="w-5 h-5 mr-2 text-pink-600 shrink-0" fill="currentColor" viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                            clip-rule="evenodd"></path>
-                    </svg>
-                    <div>
-                        <h3 class="mb-2 text-xl font-bold leading-none text-gray-900 dark:text-white">Join millions of businesses</h3>
-                        <p class="mb-2 font-light text-gray-500 dark:text-gray-400">Flowbite is trusted by ambitious startups and enterprises of every size.</p>
-                    </div>
-                </div>
             </div>
             <nav>
                 <ul class="flex space-x-4">
@@ -60,7 +35,7 @@
         <div class="mb-6 text-center lg:hidden">
             <a href="/" class="inline-flex items-center text-2xl font-semibold text-gray-900 lg:hidden dark:text-white">
                 <img class="w-8 h-8 mr-2" src="https://docs.zumito.dev/_astro/zumito-hi.CVPMU07h_16SD6a.webp" alt="logo">
-                Zumito Modules
+                {Config.appName}
             </a>
         </div>
         <div class="w-full col-span-6 mx-auto bg-white rounded-lg shadow dark:bg-gray-800 md:mt-0 sm:max-w-lg xl:p-0">

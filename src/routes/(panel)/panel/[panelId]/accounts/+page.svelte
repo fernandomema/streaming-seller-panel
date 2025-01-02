@@ -9,6 +9,8 @@
     const timeAgo = new TimeAgo('en-US')
 
     const accounts: Prisma.PanelAccountsSelect[] = $page.data.accounts;
+    const linkableProviders: Prisma.PanelProviderSelect[] = $page.data.linkableProviders;
+    const linkablePlatforms: Prisma.PanelPlatformSelect[] = $page.data.linkablePlatforms;
 
     const newAccount = {
         email: {
@@ -16,6 +18,22 @@
             error: false,
         },
         password: {
+            value: "",
+            error: false,
+        },
+        expiresAt: {
+            value: new Date(),
+            error: false,
+        },
+        providerId: {
+            value: null,
+            error: false,
+        },
+        platformId: {
+            value: null,
+            error: false,
+        },
+        notes: {
             value: "",
             error: false,
         }
@@ -176,20 +194,61 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <div class="row">
-            <div class="col-lg-6">
-              <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input type="text" bind:value={newAccount.email.value} class="form-control" placeholder="Account email">
-              </div>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="text" bind:value={newAccount.email.value} class="form-control" placeholder="Account email">
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" bind:value={newAccount.password.value} class="form-control" placeholder="Account password">
+                    </div>
+                </div>
+
             </div>
-            <div class="col-lg-6">
-              <div class="mb-3">
-                <label class="form-label">Password</label>
-                <input type="password" bind:value={newAccount.password.value} class="form-control" placeholder="Account password">
-              </div>
+
+            <div class="mb-3">
+                <label class="form-label required">Expire date</label>
+                <div>
+                    <input type="date" class="form-control" aria-describedby="expireHelp" placeholder="Expire date" name="expiresAt" value={newAccount.expiresAt.value.toISOString().split('T')[0]}
+                    on:change={(e) => newAccount.expiresAt.value = e.currentTarget.valueAsDate}
+                    >
+                </div>
+                <small class="flex items-center gap-1">
+                    <i class="i-tabler-clock"></i>
+                    {timeAgo.format(newAccount.expiresAt.value)}
+                </small>
             </div>
-          </div>
+
+            <!-- Providers -->
+            <div class="mb-3">
+                <label class="form-label">Provider</label>
+                <select class="form-select" aria-label="Providers" name="providerId" bind:value={newAccount.providerId.value}>
+                    {#each linkableProviders as provider}
+                    <option value={provider.id}>{provider.name}</option>
+                    {/each}
+                </select>
+            </div>
+
+            <!-- Platform -->
+            <div class="mb-3">
+                <label class="form-label">Platform</label>
+                <select class="form-select" aria-label="Platforms" name="platformId" bind:value={newAccount.platformId.value}>
+                    {#each linkablePlatforms as platform}
+                    <option value={platform.id}>{platform.name}</option>
+                    {/each}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Notes</label>
+                <textarea name="notes" bind:value={newAccount.notes.value} class="form-control"></textarea>
+            </div>
         </div>
         <div class="modal-footer">
           <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">

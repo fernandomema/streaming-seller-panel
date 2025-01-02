@@ -1,23 +1,37 @@
-import { redirect, type RequestHandler } from '@sveltejs/kit';
 import prisma from '$lib/prisma';
-import { decodeToken, isTokenValid } from '$lib/utils/tokenParser';
-import { userHasAccessOnPanel } from '$lib/utils/authValidation';
-
 export async function load({ cookies, params }) {
-    const token =  cookies.get('token');
-    if (!token || !isTokenValid(token)) return redirect(302, '/login');
-    const userId = decodeToken(token)!.userId;
-    const userHasAccess = await userHasAccessOnPanel(userId, params.panelId);
-    if (!userHasAccess) return redirect(302, '/login');
+    const panelId = parseInt(params.panelId);
+
 	const accounts = await prisma.panelAccounts.findMany({
         where: {
-            panelId: parseInt(params.panelId)
+            panelId: panelId,
         },
         include: {
             platform: true,
         }
-    })
+    });
+
+    const linkableProviders = await prisma.panelProvider.findMany({
+        where: {
+            panelId: panelId,
+        },
+        include: {
+            accounts: true,
+        }
+    });
+
+    const linkablePlatforms = await prisma.panelPlatform.findMany({
+        where: {
+            OR: [
+                { panelId: panelId },
+                { panelId: null }
+            ]
+        }
+    });
+
     return {
-        accounts: accounts
+        accounts: accounts,
+        linkableProviders: linkableProviders,
+        linkablePlatforms: linkablePlatforms
     };
 }

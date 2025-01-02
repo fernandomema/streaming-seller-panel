@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { goto, invalidateAll } from '$app/navigation';
+    import { goto } from '$app/navigation';
     import { page } from '$app/stores';
-  import Modal from '$lib/components/modals/Modal.svelte';
-    import Spoiler from '$lib/components/Spoiler.svelte';
+    import Modal from '$lib/components/modals/Modal.svelte';
     import type { Prisma } from '@prisma/client';
     import TimeAgo from 'javascript-time-ago';
 
@@ -66,22 +65,22 @@
                 <h3 class="card-title">Provider</h3>
             </div>
 
-            <div class="card-body">
+            <form class="card-body" method="post" action="?/edit" id="editProviderForm">
 
                 <div class="mb-3">
                     <label class="form-label required">Name</label>
                     <div>
-                      <input type="text" class="form-control" aria-describedby="nameHelp" placeholder="Enter name" bind:value={provider.name}>
+                      <input type="text" class="form-control" aria-describedby="nameHelp" placeholder="Enter name" name="name" bind:value={provider.name}>
                     </div>
                 </div>
 
                 <!-- notes -->
                 <div class="mb-3">
                     <label class="form-label">Notes</label>
-                    <textarea class="form-control" name="example-text-input" placeholder="Your notes" bind:value={provider.notes} class:is-invalid={provider.notes.error}></textarea>
+                    <textarea class="form-control" placeholder="Your notes" name="notes" bind:value={provider.notes}></textarea>
                 </div>
 
-            </div>
+            </form>
 
             <div class="card-footer">
                 <div class="row align-items-center">
@@ -90,7 +89,7 @@
                         <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
                             Delete
                         </button>
-                        <button class="btn btn-primary">
+                        <button type="submit" form="editProviderForm" class="btn btn-primary">
                             Save
                         </button>
                     </div>

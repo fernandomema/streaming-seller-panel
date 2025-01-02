@@ -1,26 +1,23 @@
-import { redirect, type RequestHandler } from '@sveltejs/kit';
+import { fail, redirect, type Actions, type RequestHandler } from '@sveltejs/kit';
 import prisma from '$lib/prisma';
 import { decodeToken, isTokenValid } from '$lib/utils/tokenParser';
 import { userHasAccessOnPanel } from '$lib/utils/authValidation';
 
 export async function load({ cookies, params }) {
    
-	const account = await prisma.panelAccounts.findFirst({
-        where: {
-            id: parseInt(params.accountId)
-        },
-        include: {
-            clients: true,
-            clientsStatus: true,
-        }
-    })
+    const panelId = parseInt(params.panelId);
+    const accountId = parseInt(params.accountId);
+	const account = await await getAccount(accountId);
+    if (!account || account.panelId != panelId) {
+        return redirect(307, `/panel/${params.panelId}/accounts`);
+    }
 
     const linkableClients = await prisma.panelClient.findMany({
         where: {
-            panelId: parseInt(params.panelId),
+            panelId: panelId,
             accounts: {
                 none: {
-                    id: parseInt(params.accountId)
+                    id: accountId
                 }
             }
         },
@@ -31,7 +28,7 @@ export async function load({ cookies, params }) {
 
     const linkableProviders = await prisma.panelProvider.findMany({
         where: {
-            panelId: parseInt(params.panelId),
+            panelId: panelId,
         },
         include: {
             accounts: true,
@@ -53,4 +50,47 @@ export async function load({ cookies, params }) {
         linkableProviders: linkableProviders,
         linkablePlatforms: linkablePlatforms
     };
+}
+
+
+export const actions = {
+    edit: async ({ request, cookies, params }) => {
+        const account = await getAccount(parseInt(params.accountId!));
+        if (!account || account.panelId != parseInt(params.panelId!)) {
+            return fail(403, {
+                message: 'Account not found'
+            });
+        }
+        // get form data
+        const formData = await request.formData();
+        const updatedAccount = await prisma.panelAccounts.update({
+            where: {
+                id: account.id
+            },
+            data: {
+                email: formData.get('email') as string || account.email,
+                password: formData.get('password') as string || account.password,
+                expiresAt: new Date(formData.get('expiresAt') as string).toISOString() || account.expiresAt,
+                providerId: parseInt(formData.get('providerId') as string) || account.providerId,
+                platformId: parseInt(formData.get('platformId') as string) || account.platformId,
+                notes: formData.get('notes') as string || account.notes
+            }
+        });
+        return {
+            account: updatedAccount
+        }
+        
+    },
+} satisfies Actions;
+
+const getAccount = async (accountId: number) => {
+    return await prisma.panelAccounts.findFirst({
+        where: {
+            id: accountId
+        },
+        include: {
+            clients: true,
+            clientsStatus: true,
+        }
+    });
 }

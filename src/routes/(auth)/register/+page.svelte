@@ -1,4 +1,6 @@
 <script>
+    import { Config } from "$lib/Config";
+
   //import { logoImageUrl } from '$lib/globalVars';
 </script>
 <section class="bg-gray-50 dark:bg-gray-900">
@@ -7,7 +9,7 @@
           <div>
               <a href="/" class="inline-flex items-center mb-6 text-2xl font-semibold text-gray-900 lg:mb-10 dark:text-white">
                   <img class="w-8 h-8 mr-2" src={logoImageUrl} alt="logo">
-                  Zumito Modules
+                  {Config.appName}
               </a>
               <div class="flex">
                   <svg class="w-5 h-5 mr-2 text-pink-600 shrink-0" fill="currentColor" viewBox="0 0 20 20"
@@ -72,7 +74,7 @@
           <a href="#"
               class="inline-flex items-center text-2xl font-semibold text-gray-900 lg:hidden dark:text-white">
               <img class="w-8 h-8 mr-2" src={logoImageUrl} alt="logo">
-              Zumito Modules
+              {Config.appName}
           </a>
       </div>
       <div
@@ -101,7 +103,7 @@
                       </div>
                       <div class="ml-3 text-sm">
                           <label for="terms" class="font-light text-gray-500 dark:text-gray-300">
-                              By signing up, you are creating a Zumito Modules account, and you agree to Zumito Modules’s <a
+                              By signing up, you are creating a {Config.appName} account, and you agree to {Config.appName}’s <a
                                   class="font-medium text-pink-600 dark:text-pink-500 hover:underline"
                                   href="#">Terms of Use</a> and <a
                                   class="font-medium text-pink-600 dark:text-pink-500 hover:underline"

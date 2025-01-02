@@ -32,13 +32,14 @@ export async function load({ cookies, params }) {
                 equals: panelId
             },
             expiresAt: {
-                lte: expiryThreshold
+                lte: expiryThreshold,
+                gte: currentDate
             }
         }
     })
 
-    const paymentsByMonthLastYear = await getPaymentsByMonthLastYear();
-    const costsByMonthLastYear = await getAccountCostsByMonthLastYear();
+    const paymentsByMonthLastYear = await getPaymentsByMonthLastYear(panelId);
+    const costsByMonthLastYear = await getAccountCostsByMonthLastYear(panelId);
 
     return {
         count: {
@@ -53,25 +54,30 @@ export async function load({ cookies, params }) {
     };
 }
 
-async function getPaymentsByMonthLastYear() {
+async function getPaymentsByMonthLastYear(panelId: number) {
     const now = new Date()
     const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth() + 1, 1)
   
     const paymentsByMonth = await prisma.panelClientAccountPayment.groupBy({
       by: ['paymentDate'],
       where: {
+        clientAccountStatus: {
+          account: {
+            panelId: panelId,
+          },
+        },
         paymentDate: {
           gte: oneYearAgo,
-          lte: now
-        }
+          lte: now,
+        },
       },
       _sum: {
-        amount: true
+        amount: true,
       },
       orderBy: {
-        paymentDate: 'asc'
-      }
-    })
+        paymentDate: 'asc',
+      },
+    });
   
     // Generate an array of all months in the last year in "YYYY-MM" format
     const allMonths = []
@@ -99,13 +105,14 @@ async function getPaymentsByMonthLastYear() {
     return formattedData
 }
 
-async function getAccountCostsByMonthLastYear() {
+async function getAccountCostsByMonthLastYear(panelId: number) {
     const now = new Date()
     const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth() + 1, 1)
   
     const costsByMonth = await prisma.panelAccounts.groupBy({
       by: ['activatedAt'],
       where: {
+        panelId: panelId,
         activatedAt: {
           gte: oneYearAgo,
           lte: now

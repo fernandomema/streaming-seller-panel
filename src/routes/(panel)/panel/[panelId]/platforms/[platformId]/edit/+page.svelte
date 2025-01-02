@@ -42,7 +42,7 @@
                 <h3 class="card-title">Provider</h3>
             </div>
 
-            <div class="card-body">
+            <form class="card-body" method="post" action="?/edit" id="editPlatformForm">
 
                 <div class="mb-3">
                     <label class="form-label required">Name</label>
@@ -53,6 +53,9 @@
                                     <i class="text-[24px] {platform.icon}"></i>
                                 </a>
                                 <div class="dropdown-menu">
+                                    <button on:click={() => platform.icon = 'i-tabler-device-unknown-filled text-gray'} class="dropdown-item" href="#">
+                                      <i class="text-[24px] i-tabler-device-unknown-filled text-gray"></i> Other
+                                    </button>
                                     <button on:click={() => platform.icon = 'i-tabler-brand-spotify text-green'} class="dropdown-item" href="#">
                                         <i class="text-[24px] i-tabler-brand-spotify text-green"></i> Spotify
                                     </button>
@@ -97,12 +100,13 @@
                                     </button>
                                 </div>
                             </div>
-                            <input type="text" class="form-control" aria-describedby="nameHelp" placeholder="Enter name" bind:value={platform.name}>
+                            <input type="hidden" name="icon" value={platform.icon}>
+                            <input type="text" class="form-control" aria-describedby="nameHelp" placeholder="Enter name" name="name" bind:value={platform.name}>
                         </div>
                     </div>
                 </div>
 
-            </div>
+            </form>
 
             <div class="card-footer">
                 <div class="row align-items-center">
@@ -111,7 +115,7 @@
                         <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
                             Delete
                         </button>
-                        <button class="btn btn-primary">
+                        <button type="submit" form="editPlatformForm" class="btn btn-primary">
                             Save
                         </button>
                     </div>

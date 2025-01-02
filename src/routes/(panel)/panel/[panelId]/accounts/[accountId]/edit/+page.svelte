@@ -69,12 +69,12 @@
                 <h3 class="card-title">Account</h3>
             </div>
 
-            <div class="card-body">
+            <form class="card-body" method="post" action="?/edit" id="editAccountForm">
 
                 <div class="mb-3">
                     <label class="form-label required">Email address</label>
                     <div>
-                      <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Enter email" bind:value={account.email}>
+                      <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Enter email" name="email" bind:value={account.email}>
                     </div>
                 </div>
 
@@ -82,7 +82,7 @@
                     <label class="form-label required">Password</label>
                     <div>
                         <Spoiler class="w-full">
-                            <input type="text" class="form-control" placeholder="Password" bind:value={account.password}>
+                            <input type="text" class="form-control" placeholder="Password" name="password" bind:value={account.password}>
                         </Spoiler>
                     </div>
                 </div>
@@ -90,7 +90,7 @@
                 <div class="mb-3">
                     <label class="form-label required">Expire date</label>
                     <div>
-                      <input type="date" class="form-control" aria-describedby="expireHelp" placeholder="Expire date" value={account.expiresAt.toISOString().split('T')[0]}
+                      <input type="date" class="form-control" aria-describedby="expireHelp" placeholder="Expire date" name="expiresAt" value={account.expiresAt.toISOString().split('T')[0]}
                         on:change={(e) => account.expiresAt = e.currentTarget.valueAsDate}
                       >
                     </div>
@@ -103,7 +103,7 @@
                 <!-- Providers -->
                  <div class="mb-3">
                     <label class="form-label">Provider</label>
-                    <select class="form-select" aria-label="Providers" bind:value={account.providerId}>
+                    <select class="form-select" aria-label="Providers" name="providerId" bind:value={account.providerId}>
                         {#each linkableProviders as provider}
                             <option value={provider.id}>{provider.name}</option>
                         {/each}
@@ -113,19 +113,25 @@
                 <!-- Platform -->
                  <div class="mb-3">
                     <label class="form-label">Platform</label>
-                    <select class="form-select" aria-label="Platforms" bind:value={account.platformId}>
+                    <select class="form-select" aria-label="Platforms" name="platformId" bind:value={account.platformId}>
                         {#each linkablePlatforms as platform}
                             <option value={platform.id}>{platform.name}</option>
                         {/each}
                     </select>
                 </div>
 
-            </div>
+                <div class="mb-3">
+                  <label class="form-label">Notes</label>
+                  <textarea name="notes" bind:value={account.notes} class="form-control"></textarea>
+                </div>
+
+
+            </form>
             <div class="card-footer">
               <div class="row align-items-center">
                 <div class="col"></div>
                 <div class="col-auto">
-                  <button class="btn btn-primary">
+                  <button type="submit" form="editAccountForm" class="btn btn-primary">
                     Save
                   </button>
                 </div>
