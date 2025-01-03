@@ -10,14 +10,20 @@ export async function POST({ request, cookies, params }) {
     const userId = decodeToken(token)!.userId;
     const userHasAccess = await userHasAccessOnPanel(userId, params.panelId);
     if (!userHasAccess) return json({result: "error", message: "You don't have access to this panel"});
-	const {email, password} = await request.json();
+	const {email, password, maxClients, activatedAt, expiresAt, buyCost, sellPrice, notes, providerId, platformId} = await request.json(); 
     await prisma.panelAccounts.create({
         data: {
             email: email.value,
             password: password.value,
             panelId: parseInt(params.panelId),
-            activatedAt: new Date(),
-            expiresAt: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 7),
+            activatedAt: activatedAt.value,
+            expiresAt: expiresAt || new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 7),
+            maxClients: maxClients.value,
+            buyCost: buyCost.value,
+            sellPrice: sellPrice.value,
+            notes: notes.value,
+            providerId: providerId.value,
+            platformId: platformId.value,
         }
     });
     return json({

@@ -21,8 +21,12 @@
             value: "",
             error: false,
         },
+        maxClients: {
+            value: 1,
+            error: false,
+        },
         expiresAt: {
-            value: new Date(),
+            value: new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000),
             error: false,
         },
         providerId: {
@@ -31,6 +35,18 @@
         },
         platformId: {
             value: null,
+            error: false,
+        },
+        activatedAt: {
+            value: new Date(),
+            error: false,
+        },
+        buyCost: {
+            value: 0,
+            error: false,
+        },
+        sellPrice: {
+            value: 0,
             error: false,
         },
         notes: {
@@ -57,6 +73,10 @@
         let response = await fetch(`/panel/${$page.data.panelId}/accounts/create/submit`, {
             method: "POST",
             body: JSON.stringify(newAccount),
+            // multipart/form-data
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            },
         }).then(r => r.json());
 
         if (response.result == "ok") window.location.reload();
@@ -213,6 +233,27 @@
             </div>
 
             <div class="mb-3">
+                <label class="form-label">Profile quantity</label>
+                <input type="number" bind:value={newAccount.maxClients.value} class="form-control" placeholder="Profile quantity">
+                <small class="form-text text-muted">
+                    The maximum number of clients that the account can be sell to
+                </small>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Activated date</label>
+                <div>
+                    <input type="date" class="form-control" aria-describedby="expireHelp" placeholder="Activated date" name="activatedAt" value={newAccount.activatedAt.value.toISOString().split('T')[0]}
+                    on:change={(e) => newAccount.activatedAt.value = e.currentTarget.valueAsDate}
+                    >
+                </div>
+                <small class="flex items-center gap-1">
+                    <i class="i-tabler-clock"></i>
+                    The account was buyed/activated {timeAgo.format(newAccount.activatedAt.value)}
+                </small>
+            </div>
+
+            <div class="mb-3">
                 <label class="form-label required">Expire date</label>
                 <div>
                     <input type="date" class="form-control" aria-describedby="expireHelp" placeholder="Expire date" name="expiresAt" value={newAccount.expiresAt.value.toISOString().split('T')[0]}
@@ -221,7 +262,7 @@
                 </div>
                 <small class="flex items-center gap-1">
                     <i class="i-tabler-clock"></i>
-                    {timeAgo.format(newAccount.expiresAt.value)}
+                    The account will expire {timeAgo.format(newAccount.expiresAt.value)}
                 </small>
             </div>
 
@@ -233,6 +274,22 @@
                     <option value={provider.id}>{provider.name}</option>
                     {/each}
                 </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Buy cost</label>
+                <input type="number" bind:value={newAccount.buyCost.value} class="form-control" placeholder="Buy cost">
+                <small class="form-text text-muted">
+                    The cost of buying the account
+                </small>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Sell price</label>
+                <input type="number" bind:value={newAccount.sellPrice.value} class="form-control" placeholder="Sell price">
+                <small class="form-text text-muted">
+                    The price of selling the account
+                </small>
             </div>
 
             <!-- Platform -->

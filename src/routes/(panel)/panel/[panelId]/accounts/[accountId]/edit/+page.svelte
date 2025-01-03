@@ -88,6 +88,27 @@
                 </div>
 
                 <div class="mb-3">
+                    <label class="form-label">Profile quantity</label>
+                    <input type="number" bind:value={account.maxClients} class="form-control" placeholder="Profile quantity">
+                    <small class="form-text text-muted">
+                        The maximum number of clients that the account can be sell to
+                    </small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Activated date</label>
+                    <div>
+                        <input type="date" class="form-control" aria-describedby="expireHelp" placeholder="Activated date" name="activatedAt" value={account.activatedAt.toISOString().split('T')[0]}
+                        on:change={(e) => account.activatedAt = e.currentTarget.valueAsDate}
+                        >
+                    </div>
+                    <small class="flex items-center gap-1">
+                        <i class="i-tabler-clock"></i>
+                        The account was buyed/activated {timeAgo.format(account.activatedAt)}
+                    </small>
+                </div>
+
+                <div class="mb-3">
                     <label class="form-label required">Expire date</label>
                     <div>
                       <input type="date" class="form-control" aria-describedby="expireHelp" placeholder="Expire date" name="expiresAt" value={account.expiresAt.toISOString().split('T')[0]}
@@ -108,6 +129,22 @@
                             <option value={provider.id}>{provider.name}</option>
                         {/each}
                     </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Buy cost</label>
+                    <input type="number" bind:value={account.buyCost} class="form-control" placeholder="Buy cost">
+                    <small class="form-text text-muted">
+                        The cost of buying the account
+                    </small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Sell price</label>
+                    <input type="number" bind:value={account.sellPrice} class="form-control" placeholder="Sell price">
+                    <small class="form-text text-muted">
+                        The price of selling the account
+                    </small>
                 </div>
 
                 <!-- Platform -->
@@ -131,6 +168,9 @@
               <div class="row align-items-center">
                 <div class="col"></div>
                 <div class="col-auto">
+                  <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                    Delete
+                  </button>
                   <button type="submit" form="editAccountForm" class="btn btn-primary">
                     Save
                   </button>

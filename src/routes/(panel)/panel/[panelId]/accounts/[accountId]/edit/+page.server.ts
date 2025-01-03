@@ -1,7 +1,5 @@
 import { fail, redirect, type Actions, type RequestHandler } from '@sveltejs/kit';
 import prisma from '$lib/prisma';
-import { decodeToken, isTokenValid } from '$lib/utils/tokenParser';
-import { userHasAccessOnPanel } from '$lib/utils/authValidation';
 
 export async function load({ cookies, params }) {
    
@@ -73,6 +71,10 @@ export const actions = {
                 expiresAt: new Date(formData.get('expiresAt') as string).toISOString() || account.expiresAt,
                 providerId: parseInt(formData.get('providerId') as string) || account.providerId,
                 platformId: parseInt(formData.get('platformId') as string) || account.platformId,
+                activatedAt: new Date(formData.get('activatedAt') as string).toISOString() || account.activatedAt,
+                buyCost: parseInt(formData.get('buyCost') as string) || account.buyCost,
+                sellPrice: parseInt(formData.get('sellPrice') as string) || account.sellPrice,
+                maxClients: parseInt(formData.get('maxClients') as string) || account.maxClients,
                 notes: formData.get('notes') as string || account.notes
             }
         });
