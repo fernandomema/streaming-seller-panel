@@ -17,7 +17,7 @@ export async function POST({ request, cookies, params }) {
             password: password.value,
             panelId: parseInt(params.panelId),
             activatedAt: activatedAt.value,
-            expiresAt: expiresAt || new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 7),
+            expiresAt: expiresAt.value || new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 7),
             maxClients: maxClients.value,
             buyCost: buyCost.value,
             sellPrice: sellPrice.value,
