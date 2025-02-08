@@ -26,11 +26,12 @@
             </div>
           </a>
           <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-            <a href="#" class="dropdown-item">Status</a>
             <a href="./profile.html" class="dropdown-item">Profile</a>
+            <div class="dropdown-divider"></div>
             <a href="#" class="dropdown-item">Feedback</a>
             <div class="dropdown-divider"></div>
-            <a href="./settings.html" class="dropdown-item">Settings</a>
+            <a href="./settings.html" class="dropdown-item">Panel Settings</a>
+            <div class="dropdown-divider"></div>
             <a href="/logout" class="dropdown-item">Logout</a>
           </div>
         </div>
